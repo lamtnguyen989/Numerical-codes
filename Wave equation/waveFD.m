@@ -3,10 +3,10 @@
 %
 % @param: space interval [x_0, x_end],
 %         time interval [t_0, t_end],
-%         number of space steps M,
-%         number of time steps N
+%         number of space steps m,
+%         number of time steps n
 
-function w = waveFD(x_0,x_end,t_0,t_end,M,N)
+function w = waveFD(x_0,x_end,t_0,t_end,m,n)
   % Initial info of the wave PDE
   f = @(x) 0*x;
   l = @(t) 0*t;
@@ -15,10 +15,8 @@ function w = waveFD(x_0,x_end,t_0,t_end,M,N)
   D = 2;
 
   % Setting up step sizes and alpha = D*k/h
-  h = (x_end-x_0)/M;
-  k = (t_end-t_0)/N;
-  m = M-1;
-  n = N;
+  h = (x_end-x_0)/m;
+  k = (t_end-t_0)/n;
   alpha = (D*k)/h;
 
   % CFL condition check
