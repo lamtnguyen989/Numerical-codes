@@ -9,11 +9,11 @@
 % BROKEN!!!
 function w = waveFD(x_start,x_end,t_start,t_end,M,N)
   % Initial info of the wave PDE
-  f = @(x) x.^5;
-  f_t = @(x) 10*x.^4;
-  l = @(t) 32*t.^5;
-  r = @(t) (1+2*t.^1).^5;
-  D = 2;
+  f = @(x) log(1 + x);
+  f_t = @(x) 1./(1 + x);
+  l = @(t) log(1 + t);
+  r = @(t) log(2 + t);
+  D = 1;
 
   % Setting up step sizes and alpha = D*k/h
   h = (x_end - x_start)/M;
