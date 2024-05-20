@@ -43,5 +43,7 @@ function w = waveFD(x_0,x_end,t_0,t_end,M,N)
   x = (0:m-1)*h + ones(1,m)*x_0;
   t = (0:n)*k + ones(1,n+1)*t_0;
   mesh(x,t,w')
+  xlabel('x');
+  ylabel('t');
   view(60,30);
   axis([x_0 x_end t_0 t_end -1.25 1.25])
