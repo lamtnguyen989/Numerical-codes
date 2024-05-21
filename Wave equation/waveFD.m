@@ -4,32 +4,39 @@
 % @param: space interval [x_start, x_end],
 %         time interval [t_start, t_end],
 %         number of space steps M,
-%         number of time steps N
+%         number of time steps n
 
 % BROKEN!!!
-function w = waveFD(x_start,x_end,t_start,t_end,M,N)
+function w = waveFD(x_start,x_end,t_start,t_end,M,n)
   % Initial info of the wave PDE
-  f = @(x) log(1 + x);
-  f_t = @(x) 1./(1 + x);
-  l = @(t) log(1 + t);
-  r = @(t) log(2 + t);
+  f = @(x) log(1 + x.^1);
+  f_t = @(x) 1./(1 + x.^1);
+  l = @(t) log(1 + t.^1);
+  r = @(t) log(2 + t.^1);
   D = 1;
 
   % Setting up step sizes and alpha = D*k/h
   h = (x_end - x_start)/M;
-  k = (t_end - t_start)/N;
+  k = (t_end - t_start)/n;
   m = M-1;
-  n = N;
   alpha = (D*k)/h;
+
+  % Input parameters check
+  if M < 4 || n < 4 || x_end - x_start < 0 || t_end - t_start < 0
+    printf("Invalid parameters inputted\n");
+    return;
+  end
 
   % CFL condition check
   if alpha > 1
-    printf("Fail to meet the CFL condition for stability\n")
+    printf("Fail to meet the CFL condition for stability with the inputted steps\n");
     return;
   end
 
   % Constructing finite-difference matrix
-  A = diag(2-2*(alpha^2)*ones(m,1)) + diag((alpha^2)*ones(m-1,1),1) + diag((alpha^2)*ones(m-1,1),-1);
+  A = diag(2-2*(alpha^2)*ones(m,1)) ...
+    + diag((alpha^2)*ones(m-1,1),1) ...
+    + diag((alpha^2)*ones(m-1,1),-1);
 
   % Initialize the solution
   w(:,1) = (1/2)*A*transpose(f(x_start + (1:m)*h)) + k*transpose(f_t(x_start + (1:m)*h));
@@ -48,12 +55,9 @@ function w = waveFD(x_start,x_end,t_start,t_end,M,N)
   % Plotting
   x = (0:m+1)*h + x_start;
   t = (0:n)*k + t_start;
-  mesh(x,t,w')
+  mesh(x,t,transpose(w))
   xlabel('x');
-  ylabel('t');
-  xlabel("x");
   ylabel("t");
   zlabel("u(x,t)")
   view(60,30);
-  axis([x_start x_end t_start t_end -1.25 1.25])
   axis([x_start, x_end, t_start, t_end, min(w(:))-0.25, max(w(:))+0.25])
