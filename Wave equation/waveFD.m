@@ -6,7 +6,7 @@
 %         number of space steps M,
 %         number of time steps n
 
-% BROKEN!!!
+
 function w = waveFD(x_start,x_end,t_start,t_end,M,n)
   % Initial info of the wave PDE
   f = @(x) log(1 + x.^1);
