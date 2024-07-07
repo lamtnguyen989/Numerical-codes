@@ -22,8 +22,8 @@ function w = waveFD(x_start,x_end,t_start,t_end,M,n)
   alpha = (D*k)/h;
 
   % Input parameters check
-  if M < 4 || n < 4 || x_end - x_start < 0 || t_end - t_start < 0
-    printf("Invalid parameters inputted\n");
+  if x_end < x_start || t_end < t_start
+    printf("Invalid parameters for the domain inputted\n");
     return;
   end
 
@@ -56,8 +56,8 @@ function w = waveFD(x_start,x_end,t_start,t_end,M,n)
   x = (0:m+1)*h + x_start;
   t = (0:n)*k + t_start;
   mesh(x,t,transpose(w))
-  xlabel('x');
+  xlabel("x");
   ylabel("t");
-  zlabel("u(x,t)")
+  zlabel("u(x,t)");
   view(60,30);
   axis([x_start, x_end, t_start, t_end, min(w(:))-0.25, max(w(:))+0.25])
