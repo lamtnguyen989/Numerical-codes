@@ -4,7 +4,7 @@ SET(TARGET_SRC ${TARGET}.cc)
 
 # Minimum CMake and requiring boost
 CMAKE_MINIMUM_REQUIRED(VERSION 4.0.1)
-find_package(Boost REQUIRED)
+#find_package(Boost REQUIRED)
 
 # Including stuff
 include_directories(${Boost_INCLUDE_DIRS})

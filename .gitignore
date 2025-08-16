@@ -1,5 +1,11 @@
-Improper integrals/CMakeFiles/
-Improper integrals/cmake_install.cmake
-Improper integrals/CMakeCache.txt
-Improper integrals/Makefile
-Improper integrals/gaussian-integral
+Improper integrals/Gaussian integrals/CMakeFiles/
+Improper integrals/Gaussian integrals/cmake_install.cmake
+Improper integrals/Gaussian integrals/CMakeCache.txt
+Improper integrals/Gaussian integrals/Makefile
+Improper integrals/Gaussian integrals/gaussian-integral
+
+Improper integrals/Transcendentals/CMakeFiles/
+Improper integrals/Transcendentals/cmake_install.cmake
+Improper integrals/Transcendentals/CMakeCache.txt
+Improper integrals/Transcendentals/Makefile
+Improper integrals/Transcendentals/transcendental-integrals

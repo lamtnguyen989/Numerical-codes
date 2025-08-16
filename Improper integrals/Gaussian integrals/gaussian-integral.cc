@@ -19,7 +19,7 @@ int main()
 
     // Print
     std::cout << "Integration of standard Gaussian over the whole real line" << std::endl << std::endl;
-    std::cout << "Actual integration result: " << std::setprecision(result) << std::endl;
+    std::cout << "Actual integration result: " << std::setprecision(10) << result << std::endl;
     std::cout << "Estimated error: " << estimated_error << std::endl;
     std::cout << "Actual error: " << std::abs(std::sqrt(M_PI) - result) << std::endl;
 }
