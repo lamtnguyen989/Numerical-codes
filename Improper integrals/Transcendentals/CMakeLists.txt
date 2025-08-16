@@ -1,6 +1,6 @@
 # Simple app so just simply make a variable of target names
 SET(TARGET "transcendental-integrals")
-SET(TARGET_SRC ${TARGET}.cc)
+SET(TARGET_SRC src/${TARGET}.cc)
 
 # Minimum CMake and requiring boost
 CMAKE_MINIMUM_REQUIRED(VERSION 4.0.1)
