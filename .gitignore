@@ -9,3 +9,5 @@ Improper integrals/Transcendentals/cmake_install.cmake
 Improper integrals/Transcendentals/CMakeCache.txt
 Improper integrals/Transcendentals/Makefile
 Improper integrals/Transcendentals/transcendental-integrals
+
+fft/bin
