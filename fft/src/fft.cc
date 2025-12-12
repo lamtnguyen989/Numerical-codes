@@ -1,7 +1,6 @@
 #include <iostream>
 #include <complex>
 #include <vector>
-#include <cmath>
 
 void fft(std::vector<std::complex<double>> &X)
 {
