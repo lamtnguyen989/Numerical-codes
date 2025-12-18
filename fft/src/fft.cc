@@ -2,7 +2,7 @@
 #include <complex>
 #include <vector>
 
-void fft(std::vector<std::complex<double>> &X)
+std::vector<std::complex<double>> fft_recurse(std::vector<std::complex<double>> X)
 {
     // Length and helper vectors
     const unsigned int N = X.size();
@@ -10,7 +10,7 @@ void fft(std::vector<std::complex<double>> &X)
     std::vector<std::complex<double>> odds(N/2);
 
     if (N == 1 )
-        return;     // Recursion base case
+        return X;     // Recursion base case
 
     // Copy the evens and odds
     for (unsigned int k = 0; k < N/2; k++) {
@@ -19,8 +19,8 @@ void fft(std::vector<std::complex<double>> &X)
     }
 
     // Recurse the DFT
-    fft(evens);
-    fft(odds);
+    evens = fft_recurse(evens);
+    odds = fft_recurse(odds);
 
     // Computation result
     for (unsigned int k = 0; k < N/2; k++) {
@@ -28,6 +28,7 @@ void fft(std::vector<std::complex<double>> &X)
         X.at(k) = evens.at(k) + root_of_unity * odds.at(k);
         X.at(k + N/2) = evens.at(k) - root_of_unity * odds.at(k);
     }
+    return X;
 }
 
 int main(int argc, char* argv[])
@@ -39,9 +40,18 @@ int main(int argc, char* argv[])
     }
 
     // FFT the thing
-    fft(basic);
+    std::vector<std::complex<double>> result = fft_recurse(basic);
 
+    // Basic Testing
+    std::cout << "Original signal: " << std::endl;
     for (unsigned int k = 0; k < basic.size(); k++) {
-        std::cout << basic.at(k) << std::endl;
+        std::cout << basic.at(k) << " ";
     }
+    std::cout << std::endl << std::endl;
+
+    std::cout << "FFT: " << std::endl;
+    for (unsigned int k = 0; k < result.size(); k++) {
+        std::cout << result.at(k) << " ";
+    }
+    std::cout << std::endl;
 }
