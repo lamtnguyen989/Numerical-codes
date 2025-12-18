@@ -2,6 +2,7 @@
 #include <complex>
 #include <vector>
 
+/* Basic recursive FFT (only meant for length of power of 2) */
 std::vector<std::complex<double>> fft_recurse(std::vector<std::complex<double>> X)
 {
     // Length and helper vectors
@@ -31,6 +32,65 @@ std::vector<std::complex<double>> fft_recurse(std::vector<std::complex<double>> 
     return X;
 }
 
+/* Iterative version of above code (power of 2 length) */
+std::vector<std::complex<double>> fft_iterative_pow_of_2(std::vector<std::complex<double>> X)
+{
+    // Length
+    const unsigned int N = X.size();
+
+    // Bit-reversal permutation
+    unsigned int bit_reversed_index = 0;
+    for (unsigned int index = 0; index < N; index++) {
+        // Swapping and make sure we don't double swap
+        if (bit_reversed_index > index)
+            std::swap(X.at(index), X.at(bit_reversed_index));
+
+        // Calculate the bit reversal of next index
+        unsigned int right_shift = N >> 1;
+        while ((right_shift >= 1) && (bit_reversed_index >= right_shift)) {
+            bit_reversed_index -= right_shift;
+            right_shift >> 1;
+        }
+        bit_reversed_index += right_shift;
+    }
+
+    // FFT
+    for (unsigned int stage = 2; stage <= N; stage <<= 1) {
+
+        // The stage's root of unity
+        std::complex<double> root_of_unity = std::polar(1.0, -2*M_PI*stage / N);
+
+        for (unsigned int group = 0; group < N; group += stage) {
+            for (unsigned int k = 0; k < (stage >> 1) ; k++) {
+
+                // Calculate the butterfly parts
+                std::complex<double> p1 = X.at(group + k);
+                std::complex<double> p2 = root_of_unity * X.at(group + k + (stage >> 1));
+
+                X.at(group + k) =  p1 + p2;     // Lower half
+                X.at(group + k + (stage >> 1)) = p1 - p2;   // Higher half
+            }
+        }
+    }
+    
+
+    return X;
+}
+
+/* Wrapper for dealing with arbirary length signals */
+std::vector<std::complex<double>> fft(std::vector<std::complex<double>> X)
+{
+    // Signal length
+    const unsigned int N = X.size();
+
+    // No need to fuss with extra logic if size is a power of 2
+    if ((N & (N-1)) == 0)
+        return fft_iterative_pow_of_2(X);
+
+    // TODO: Deal with arbitrary length
+    return X;
+}
+
 int main(int argc, char* argv[])
 {
     // Generate basic signal array
@@ -40,9 +100,9 @@ int main(int argc, char* argv[])
     }
 
     // FFT the thing
-    std::vector<std::complex<double>> result = fft_recurse(basic);
+    std::vector<std::complex<double>> result = fft(basic);
 
-    // Basic Testing
+    // Basic (eyes) Testing
     std::cout << "Original signal: " << std::endl;
     for (unsigned int k = 0; k < basic.size(); k++) {
         std::cout << basic.at(k) << " ";
