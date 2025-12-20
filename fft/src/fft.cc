@@ -39,36 +39,36 @@ std::vector<std::complex<double>> fft_iterative_pow_of_2(std::vector<std::comple
     const unsigned int N = X.size();
 
     // Bit-reversal permutation
-    unsigned int bit_reversed_index = 0;
+    unsigned int index_bit_reversed = 0;
     for (unsigned int index = 0; index < N; index++) {
         // Swapping and make sure we don't double swap
-        if (bit_reversed_index > index)
-            std::swap(X.at(index), X.at(bit_reversed_index));
+        if (index_bit_reversed > index)
+            std::swap(X.at(index), X.at(index_bit_reversed));
 
         // Calculate the bit reversal of next index
         unsigned int right_shift = N >> 1;
-        while ((right_shift >= 1) && (bit_reversed_index >= right_shift)) {
-            bit_reversed_index -= right_shift;
+        while ((right_shift >= 1) && (index_bit_reversed >= right_shift)) {
+            index_bit_reversed -= right_shift;
             right_shift >> 1;
         }
-        bit_reversed_index += right_shift;
+        index_bit_reversed += right_shift;
     }
 
     // FFT
-    for (unsigned int stage = 2; stage <= N; stage <<= 1) {
+    for (unsigned int stage = 2; stage <= N; stage *= 2) {
 
         // The stage's root of unity
         std::complex<double> root_of_unity = std::polar(1.0, -2*M_PI*stage / N);
 
         for (unsigned int group = 0; group < N; group += stage) {
-            for (unsigned int k = 0; k < (stage >> 1) ; k++) {
+            for (unsigned int k = 0; k < stage/2 ; k++) {
 
                 // Calculate the butterfly parts
                 std::complex<double> p1 = X.at(group + k);
-                std::complex<double> p2 = root_of_unity * X.at(group + k + (stage >> 1));
+                std::complex<double> p2 = root_of_unity * X.at(group + k + stage/2);
 
                 X.at(group + k) =  p1 + p2;     // Lower half
-                X.at(group + k + (stage >> 1)) = p1 - p2;   // Higher half
+                X.at(group + k + stage/2) = p1 - p2;   // Higher half
             }
         }
     }
