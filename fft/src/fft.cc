@@ -60,7 +60,7 @@ std::vector<Complex> fft_iterative_pow_of_2(std::vector<Complex> X)
     for (unsigned int stage = 2; stage <= N; stage *= 2) {
 
         // The stage's root of unity
-        Complex root_of_unity = static_cast<Complex> (std::polar(1.0, -2*M_PI / N));
+        Complex root_of_unity = static_cast<Complex> (std::polar(1.0, -2*M_PI / stage));
 
         for (unsigned int group = 0; group < N; group += stage) {
             Complex twiddle = Complex(1.0, 0.0);
