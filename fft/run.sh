@@ -3,4 +3,5 @@
 mkdir -p bin/
 
 make basic
-./bin/fft
+./bin/fft > run.log
+cat run.log

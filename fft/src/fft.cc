@@ -51,7 +51,7 @@ std::vector<Complex> fft_iterative_pow_of_2(std::vector<Complex> X)
         unsigned int right_shift = N >> 1;
         while ((right_shift >= 1) && (index_bit_reversed >= right_shift)) {
             index_bit_reversed -= right_shift;
-            right_shift >> 1;
+            right_shift >>= 1;
         }
         index_bit_reversed += right_shift;
     }
@@ -60,18 +60,20 @@ std::vector<Complex> fft_iterative_pow_of_2(std::vector<Complex> X)
     for (unsigned int stage = 2; stage <= N; stage *= 2) {
 
         // The stage's root of unity
-        Complex root_of_unity = static_cast<Complex> (std::polar(1.0, -2*M_PI*stage / N));
+        Complex root_of_unity = static_cast<Complex> (std::polar(1.0, -2*M_PI / N));
 
         for (unsigned int group = 0; group < N; group += stage) {
+            Complex twiddle = Complex(1.0, 0.0);
             for (unsigned int k = 0; k < stage/2 ; k++) {
 
                 // Calculate the butterfly parts
                 Complex p1 = X.at(group + k);
-                Complex p2 = root_of_unity * X.at(group + k + stage/2);
+                Complex p2 = twiddle * X.at(group + k + stage/2);
 
                 X.at(group + k) =  p1 + p2;     // Lower half
                 X.at(group + k + stage/2) = p1 - p2;   // Higher half
             }
+            twiddle *= root_of_unity;
         }
     }
     
@@ -96,7 +98,21 @@ std::vector<Complex> fft(std::vector<Complex> X)
 /* DFT function to test FFT */
 std::vector<Complex> dft(std::vector<Complex> X)
 {
-    // TODO
+    const unsigned int N = X.size();
+
+    // Result container
+    std::vector<Complex> result(N, Complex(0.0, 0.0));
+
+    for (unsigned int k = 0; k < N; k++) {
+        Complex sum = Complex(0.0, 0.0);
+        for (unsigned int n = 0; n < N; n++) {
+            Complex root_of_unity = static_cast<Complex>(std::polar(1.0, -2*M_PI*k*n / N));
+            sum += X.at(n) * root_of_unity;
+        }
+        result.at(k) = sum;
+    }
+
+    return result;
 }
 
 int main(int argc, char* argv[])
@@ -110,7 +126,7 @@ int main(int argc, char* argv[])
     // FFT the thing
     std::vector<Complex> result = fft(basic);
 
-    // Basic (eyes) Testing
+    // ================== Basic (eyes) Testing ================== //
     std::cout << "Original signal: " << std::endl;
     for (unsigned int k = 0; k < basic.size(); k++) {
         std::cout << basic.at(k) << " ";
@@ -121,5 +137,45 @@ int main(int argc, char* argv[])
     for (unsigned int k = 0; k < result.size(); k++) {
         std::cout << result.at(k) << " ";
     }
+    std::cout << std::endl << std::endl;
+
+    // ================== DFT (eye) test ================== //
+    std::cout << "Testing with agreement with DFT using random signal " << std::endl;
+    
+    std::vector<Complex> signal;
+    for (unsigned int k = 0; k < 8; k++) {
+        signal.push_back(Complex(std::rand() / (RAND_MAX*10.0) - 5.0, std::rand() / (RAND_MAX*10.0) - 5.0));
+    }
+
+    std::vector<Complex> fft_result = fft(signal);
+    std::vector<Complex> dft_result = dft(signal);
+
+    std::cout << "Signal: " << std::endl;
+    for (unsigned int k = 0; k < signal.size(); k++) {
+        std::cout << signal.at(k) << " ";
+    }
     std::cout << std::endl;
+
+    std::cout << "FFT: " << std::endl;
+    for (unsigned int k = 0; k < fft_result.size(); k++) {
+        std::cout << fft_result.at(k) << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "DFT: " << std::endl;
+    for (unsigned int k = 0; k < dft_result.size(); k++) {
+        std::cout << dft_result.at(k) << " ";
+    }
+    std::cout << std::endl;
+
+    double err = 0.0;
+    double max_err = 0.0;
+    for (unsigned int k = 0; k < dft_result.size(); k++) {
+        err = std::abs(dft_result.at(k) - fft_result.at(k));
+        if (err > max_err) {
+            max_err = err;
+        }
+    }
+    std::cout << "Max error between DFT and FFT is: " << max_err << std::endl;
+    
 }
