@@ -35,7 +35,7 @@ std::vector<Complex> fft_recurse(std::vector<Complex> X)
 }
 
 /* DFT function to test FFT */
-std::vector<Complex> dft(std::vector<Complex> X)
+std::vector<Complex> dft(std::vector<Complex> X, bool inverse=false)
 {
     const unsigned int N = X.size();
 
@@ -45,14 +45,28 @@ std::vector<Complex> dft(std::vector<Complex> X)
     for (unsigned int k = 0; k < N; k++) {
         Complex sum = Complex(0.0, 0.0);
         for (unsigned int n = 0; n < N; n++) {
-            Complex root_of_unity = static_cast<Complex>(std::polar(1.0, -2*M_PI*k*n / N));
+
+            // Changing the primitive root of unity based on whether or not it is an inverse DFT
+            Complex root_of_unity;
+            if (inverse == false)
+                root_of_unity = static_cast<Complex>(std::polar(1.0, -2*M_PI*k*n / N));
+            else
+                root_of_unity = static_cast<Complex>(std::polar(1.0, 2*M_PI*k*n / N));
+
+
+            // DFT sum
             sum += X.at(n) * root_of_unity;
         }
+
+        if (inverse) {sum /= N;}
         result.at(k) = sum;
     }
 
     return result;
 }
+
+/* Inverse DFT wrapper */
+std::vector<Complex> idft(std::vector<Complex> X) { return dft(X, true);}
 
 /* Iterative version of above code (power of 2 length) */
 std::vector<Complex> fft_iterative_pow_of_2(std::vector<Complex> X)
@@ -178,6 +192,13 @@ int main(int argc, char* argv[])
             max_err = err;
         }
     }
-    std::cout << "Max error between DFT and FFT is: " << max_err << std::endl;
-    
+    std::cout << "Max error between DFT and FFT is: " << max_err << std::endl << std::endl;
+
+    // ================== Inverse DFT test ================== //
+    std::vector<Complex> inverse_dft = idft(dft_result);
+    std::cout << "Inverse DFT: " << std::endl;
+    for (unsigned int k = 0; k < inverse_dft.size(); k++) {
+        std::cout << inverse_dft.at(k) << " ";
+    }
+    std::cout << std::endl;
 }
