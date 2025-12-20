@@ -72,8 +72,10 @@ std::vector<Complex> fft_iterative_pow_of_2(std::vector<Complex> X)
 
                 X.at(group + k) =  p1 + p2;     // Lower half
                 X.at(group + k + stage/2) = p1 - p2;   // Higher half
+
+                // Update twiddle 
+                twiddle *= root_of_unity;
             }
-            twiddle *= root_of_unity;
         }
     }
     
