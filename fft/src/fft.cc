@@ -2,13 +2,15 @@
 #include <complex>
 #include <vector>
 
+using Complex = std::complex<float>;
+
 /* Basic recursive FFT (only meant for length of power of 2) */
-std::vector<std::complex<double>> fft_recurse(std::vector<std::complex<double>> X)
+std::vector<Complex> fft_recurse(std::vector<Complex> X)
 {
     // Length and helper vectors
     const unsigned int N = X.size();
-    std::vector<std::complex<double>> evens(N/2);
-    std::vector<std::complex<double>> odds(N/2);
+    std::vector<Complex> evens(N/2);
+    std::vector<Complex> odds(N/2);
 
     if (N == 1 )
         return X;     // Recursion base case
@@ -25,7 +27,7 @@ std::vector<std::complex<double>> fft_recurse(std::vector<std::complex<double>> 
 
     // Computation result
     for (unsigned int k = 0; k < N/2; k++) {
-        std::complex<double> root_of_unity = std::polar(1.0, -2*M_PI*k / N);
+        Complex root_of_unity = static_cast<Complex>(std::polar(1.0, -2*M_PI*k / N));
         X.at(k) = evens.at(k) + root_of_unity * odds.at(k);
         X.at(k + N/2) = evens.at(k) - root_of_unity * odds.at(k);
     }
@@ -33,7 +35,7 @@ std::vector<std::complex<double>> fft_recurse(std::vector<std::complex<double>> 
 }
 
 /* Iterative version of above code (power of 2 length) */
-std::vector<std::complex<double>> fft_iterative_pow_of_2(std::vector<std::complex<double>> X)
+std::vector<Complex> fft_iterative_pow_of_2(std::vector<Complex> X)
 {
     // Length
     const unsigned int N = X.size();
@@ -58,14 +60,14 @@ std::vector<std::complex<double>> fft_iterative_pow_of_2(std::vector<std::comple
     for (unsigned int stage = 2; stage <= N; stage *= 2) {
 
         // The stage's root of unity
-        std::complex<double> root_of_unity = std::polar(1.0, -2*M_PI*stage / N);
+        Complex root_of_unity = static_cast<Complex> (std::polar(1.0, -2*M_PI*stage / N));
 
         for (unsigned int group = 0; group < N; group += stage) {
             for (unsigned int k = 0; k < stage/2 ; k++) {
 
                 // Calculate the butterfly parts
-                std::complex<double> p1 = X.at(group + k);
-                std::complex<double> p2 = root_of_unity * X.at(group + k + stage/2);
+                Complex p1 = X.at(group + k);
+                Complex p2 = root_of_unity * X.at(group + k + stage/2);
 
                 X.at(group + k) =  p1 + p2;     // Lower half
                 X.at(group + k + stage/2) = p1 - p2;   // Higher half
@@ -78,7 +80,7 @@ std::vector<std::complex<double>> fft_iterative_pow_of_2(std::vector<std::comple
 }
 
 /* Wrapper for dealing with arbirary length signals */
-std::vector<std::complex<double>> fft(std::vector<std::complex<double>> X)
+std::vector<Complex> fft(std::vector<Complex> X)
 {
     // Signal length
     const unsigned int N = X.size();
@@ -91,16 +93,22 @@ std::vector<std::complex<double>> fft(std::vector<std::complex<double>> X)
     return X;
 }
 
+/* DFT function to test FFT */
+std::vector<Complex> dft(std::vector<Complex> X)
+{
+    // TODO
+}
+
 int main(int argc, char* argv[])
 {
     // Generate basic signal array
-    std::vector<std::complex<double>> basic;
+    std::vector<Complex> basic;
     for (unsigned int k= 1; k <= 4; k++) {
-        basic.push_back(std::complex<double>(k,0));
+        basic.push_back(Complex(k,0));
     }
 
     // FFT the thing
-    std::vector<std::complex<double>> result = fft(basic);
+    std::vector<Complex> result = fft(basic);
 
     // Basic (eyes) Testing
     std::cout << "Original signal: " << std::endl;
