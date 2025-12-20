@@ -34,6 +34,26 @@ std::vector<Complex> fft_recurse(std::vector<Complex> X)
     return X;
 }
 
+/* DFT function to test FFT */
+std::vector<Complex> dft(std::vector<Complex> X)
+{
+    const unsigned int N = X.size();
+
+    // Result container
+    std::vector<Complex> result(N, Complex(0.0, 0.0));
+
+    for (unsigned int k = 0; k < N; k++) {
+        Complex sum = Complex(0.0, 0.0);
+        for (unsigned int n = 0; n < N; n++) {
+            Complex root_of_unity = static_cast<Complex>(std::polar(1.0, -2*M_PI*k*n / N));
+            sum += X.at(n) * root_of_unity;
+        }
+        result.at(k) = sum;
+    }
+
+    return result;
+}
+
 /* Iterative version of above code (power of 2 length) */
 std::vector<Complex> fft_iterative_pow_of_2(std::vector<Complex> X)
 {
@@ -94,27 +114,7 @@ std::vector<Complex> fft(std::vector<Complex> X)
         return fft_iterative_pow_of_2(X);
 
     // TODO: Deal with arbitrary length
-    return X;
-}
-
-/* DFT function to test FFT */
-std::vector<Complex> dft(std::vector<Complex> X)
-{
-    const unsigned int N = X.size();
-
-    // Result container
-    std::vector<Complex> result(N, Complex(0.0, 0.0));
-
-    for (unsigned int k = 0; k < N; k++) {
-        Complex sum = Complex(0.0, 0.0);
-        for (unsigned int n = 0; n < N; n++) {
-            Complex root_of_unity = static_cast<Complex>(std::polar(1.0, -2*M_PI*k*n / N));
-            sum += X.at(n) * root_of_unity;
-        }
-        result.at(k) = sum;
-    }
-
-    return result;
+    return dft(X);
 }
 
 int main(int argc, char* argv[])
