@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <vector>
-#include <stdexcept>
 
 
 /* Arbitrary order tensor data structure */
