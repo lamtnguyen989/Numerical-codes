@@ -25,9 +25,9 @@ class Tensor
         unsigned int size() { return data.size();}
 
         /* Setters */
-        void set_value_at(&T val, std::vector<unsigned int>& indices)
+        void set_value_at(T val, std::vector<unsigned int>& indices)
         {
-            unsigned int index = process_indices(indicies);
+            unsigned int index = process_indices(indices);
             data.at(index) = val;
         }
         
@@ -60,7 +60,7 @@ class Tensor
         unsigned int process_indices(std::vector<unsigned int>& indices)
         {
             // Checking if the sizes is a-okay
-            const unsigned int order = order();
+            const unsigned int order = this.order();
             if (indices.size() != order)
                 throw std::invalid_argument("Dimension mismatch: Invalid number of indicies provided!");
 
