@@ -8,5 +8,6 @@ using Complex = std::complex<float>;
 
 int main()
 {
-    Tensor<Complex> tensor;
+    Tensor<Complex> tensor({1.0}, {1});
+    std::cout << "Hello world " << tensor.order() <<std::endl;
 }

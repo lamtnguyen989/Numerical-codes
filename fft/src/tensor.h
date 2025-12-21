@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 
 /* Arbitrary order tensor data structure */
@@ -15,49 +16,51 @@ class Tensor
         Tensor() {}
 
         Tensor(std::vector<T> data_values, std::vector<unsigned int> shape_dimensions) 
-            : data_(data_values)
-            , shape_(shape_dimensions)
+            : _data(data_values)
+            , _shape(shape_dimensions)
         {
             compute_strides();
         }
 
         /* Metadata */
-        unsigned int order() { return shape_.size();}
-        unsigned int size() { return data_.size();}
-        std::vector<unsigned int> shape() { return shape_;}
+        unsigned int order() { return _shape.size();}
+        unsigned int size() { return _data.size();}
+        std::vector<unsigned int> shape() { return _shape;}
 
         /* Setters */
         void set_value_at(T val, std::vector<unsigned int>& indices)
         {
             unsigned int index = process_indices(indices);
-            data_.at(index) = val;
+            _data.at(index) = val;
         }
         
         /* Accessors */
         T value_at(std::vector<unsigned int>& indices)
         {
             unsigned int index = process_indices(indices);
-            return data_.at(index);
+            return _data.at(index);
         }
 
     private: 
 
         /* Data fields */
-        std::vector<T> data_;
-        std::vector<unsigned int> strides_;
-        std::vector<unsigned int> shape_;
+        std::vector<T> _data;
+        std::vector<unsigned int> _strides;
+        std::vector<unsigned int> _shape;
 
         /* Compute strides for constructor */
         void compute_strides() 
         {
             // Configure the strides data container
-            unsigned int order = shape_.size();
-            strides_.resize(order);
+            unsigned int order = _shape.size();
+            _strides.resize(order);
 
             // Stride with Row-major access
-            strides_.back() = 1;
-            for (unsigned int k = order - 2; k >= 0; k--) {
-                strides_.at(k) = strides_.at(k+1) * shape_.at(k+1);
+            _strides.back() = 1;
+            if ((int) order - 2 >= 0) {
+                for (unsigned int k = order - 2; k >= 0; k--) {
+                    _strides.at(k) = _strides.at(k+1) * _shape.at(k+1);
+                }
             }
         }
 
@@ -65,7 +68,7 @@ class Tensor
         unsigned int process_indices(std::vector<unsigned int>& indices)
         {
             // Checking if the sizes is a-okay
-            const unsigned int order = shape_.size();
+            const unsigned int order = _shape.size();
             if (indices.size() != order)
                 throw std::invalid_argument("Dimension mismatch!");
 
@@ -74,11 +77,11 @@ class Tensor
             for (unsigned int k = 0; k < order; k++) {
 
                 // Checking every index is within bounds
-                if (indices.at(k) >= shape_.at(k))
+                if (indices.at(k) >= _shape.at(k))
                     throw std::out_of_range("Index out of bounds!");
 
                 // Update the global flat index
-                index += indices.at(k) * strides_.at(k);
+                index += indices.at(k) * _strides.at(k);
             }
 
             return index;
