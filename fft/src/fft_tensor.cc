@@ -151,6 +151,11 @@ Tensor<Complex> ifft(Tensor<Complex> X) { return fft(X, true);}
 
 int main()
 {
-    Tensor<Complex> tensor({1.0}, {1});
-    std::cout << "Hello world " << tensor.order() <<std::endl;
+    Tensor<Complex> tensor({Complex(1.0, 2.0), Complex(3.0, 4.0)}, {2,1});
+    std::vector<unsigned int> indices = {1,0};
+
+    Complex t = tensor.value_at(indices);
+
+    std::cout << "Real: " << t.real() <<std::endl;
+    std::cout << "Imaginary: " << t.imag() <<std::endl;
 }
