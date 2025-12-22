@@ -20,6 +20,17 @@ class Tensor
             : _data(data_values)
             , _shape(shape_dimensions)
         {
+            if (size_from_shape(shape_dimensions) != data_values.size())
+                throw std::invalid_argument("Dimension mismatch!");
+            
+            compute_strides();
+        }
+
+        Tensor(std::vector<unsigned int> shape)
+            : _shape(shape)
+        {
+            unsigned int total_size = size_from_shape(shape);
+            _data.resize(total_size, T() );
             compute_strides();
         }
 
@@ -44,7 +55,7 @@ class Tensor
             unsigned int slice_size = _shape.at(dim);
 
             for (unsigned int k = 0; k < slice_size; k++) {
-                indices.at(k) = k;
+                indices.at(dim) = k;
                 set_value_at(new_values.at(k), indices);
             }
         }
@@ -64,7 +75,7 @@ class Tensor
             std::vector<T> slice(slice_size);
 
             for (unsigned int k = 0; k < slice_size; k++) {
-                indices.at(k) = k;
+                indices.at(dim) = k;
                 slice.at(k) = value_at(indices);
             }
 
@@ -81,7 +92,7 @@ class Tensor
         std::vector<unsigned int> _shape;
 
         /*** 
-            Compute strides for constructor 
+            Constructor helpers
         ***/
         void compute_strides() 
         {
@@ -95,6 +106,17 @@ class Tensor
                 _strides.at(k) = stride_val;
                 stride_val *= _shape.at(k);
             }
+        }
+
+        unsigned int size_from_shape(std::vector<unsigned int>& shape)
+        {
+            unsigned int total_size = 1;
+
+            for (unsigned int k = 0; k < shape.size(); k++) {
+                total_size *= shape.at(k);
+            }
+
+            return total_size;
         }
 
         /*** 

@@ -126,7 +126,27 @@ std::vector<Complex> ifft_1d(std::vector<Complex> X) { return fft_1d(X, true);}
 // Forward transformation
 Tensor<Complex> dft(Tensor<Complex> X, bool inverse=false)
 {
-    // TODO
+/*
+    // Tensor metadata
+    std::vector<unsigned int> shape = X.shape();
+    unsigned int order = X.order();
+    unsigned int size = X.size();
+
+    // Result container
+    Tensor<Complex> result(shape);
+
+    // Iteratively apply 1D DFT along the dimensions
+    for (unsigned int dim = 0; dim < order; dim++) {
+
+        // Dimension size and num of slices needed
+        unsigned int dim_size = shape.at(dim);
+        unsigned int num_slices = total_size / dim_size;
+
+        // DFT through all of the slices
+        std::vector<unsigned int> indices(order, 0);
+    }
+
+*/
     return {};
 }
 
