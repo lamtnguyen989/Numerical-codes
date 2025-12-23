@@ -1,6 +1,7 @@
 #include <iostream>
 #include <complex>
 #include <vector>
+#include <cmath>
 
 #include "tensor.h"
 
@@ -123,31 +124,57 @@ std::vector<Complex> ifft_1d(std::vector<Complex> X) { return fft_1d(X, true);}
 /***
     Arbitrary order DFT using Tensor
 ***/
+// Global indices grabbing
+std::vector<unsigned int> grab_tensor_index_of_slice(unsigned int dim, unsigned int slice, unsigned int order, std::vector<unsigned int>& shape)
+{
+        // Indices container
+        std::vector<unsigned int> indx(order, 0);
+        
+        // Calculate indices for this specific slice
+        unsigned int temp = slice;
+        for (unsigned int n = 0; n < order; n++) {
+                if (n == dim)
+                    continue;
+                unsigned int stride_val = 1;
+                for (unsigned int k = n + 1; k < order; k++) {
+                        if (k != dim) 
+                            stride_val *= shape.at(k);
+                }
+                indx.at(n) = (temp / stride_val) % shape.at(n);
+        } 
+        
+        return indx;
+}
+
 // Forward transformation
 Tensor<Complex> dft(Tensor<Complex> X, bool inverse=false)
 {
-/*
-    // Tensor metadata
-    std::vector<unsigned int> shape = X.shape();
-    unsigned int order = X.order();
-    unsigned int size = X.size();
-
-    // Result container
-    Tensor<Complex> result(shape);
-
-    // Iteratively apply 1D DFT along the dimensions
-    for (unsigned int dim = 0; dim < order; dim++) {
-
-        // Dimension size and num of slices needed
-        unsigned int dim_size = shape.at(dim);
-        unsigned int num_slices = total_size / dim_size;
-
-        // DFT through all of the slices
-        std::vector<unsigned int> indices(order, 0);
-    }
-
-*/
-    return {};
+        // Tensor metadata
+        std::vector<unsigned int> shape = X.shape();
+        unsigned int order = X.order();
+        unsigned int total_size = X.size();
+        
+        // Iteratively apply 1D DFT along the dimensions
+        for (unsigned int dim = 0; dim < order; dim++) {
+                // Dimension size and num of slices needed
+                unsigned int dim_size = shape.at(dim);
+                unsigned int num_slices = total_size / dim_size;
+                
+                // Result container for this dimension
+                Tensor<Complex> result(shape);
+                
+                // DFT through all of the slices
+                for (unsigned int slice = 0; slice < num_slices; slice++) {
+                    std::vector<unsigned int> indices = grab_tensor_index_of_slice(dim, slice, order, shape);
+                    std::vector<Complex> slice_data = X.extract_1d_slice(dim, indices);
+                    std::vector<Complex> transformed = dft_1d(slice_data, inverse);
+                    result.set_1d_slice(dim, indices, transformed);
+                }
+                
+                X = result;
+        }
+        
+        return X;
 }
 
 // Inverse transformation
@@ -160,9 +187,34 @@ Tensor<Complex> idft(Tensor<Complex> X) { return dft(X, true);}
 // Forward transformation
 Tensor<Complex> fft(Tensor<Complex> X, bool inverse=false)
 {
-    // TODO
-    return {};
+        // Tensor metadata
+        std::vector<unsigned int> shape = X.shape();
+        unsigned int order = X.order();
+        unsigned int total_size = X.size();
+        
+        // Iteratively apply 1D DFT along the dimensions
+        for (unsigned int dim = 0; dim < order; dim++) {
+                // Dimension size and num of slices needed
+                unsigned int dim_size = shape.at(dim);
+                unsigned int num_slices = total_size / dim_size;
+                
+                // Result container for this dimension
+                Tensor<Complex> result(shape);
+                
+                // DFT through all of the slices
+                for (unsigned int slice = 0; slice < num_slices; slice++) {
+                    std::vector<unsigned int> indices = grab_tensor_index_of_slice(dim, slice, order, shape);
+                    std::vector<Complex> slice_data = X.extract_1d_slice(dim, indices);
+                    std::vector<Complex> transformed = fft_1d(slice_data, inverse);
+                    result.set_1d_slice(dim, indices, transformed);
+                }
+                
+                X = result;
+        }
+        
+        return X;
 }
+
 
 // Inverse transformation
 Tensor<Complex> ifft(Tensor<Complex> X) { return fft(X, true);}
@@ -171,11 +223,24 @@ Tensor<Complex> ifft(Tensor<Complex> X) { return fft(X, true);}
 
 int main()
 {
-    Tensor<Complex> tensor({Complex(1.0, 2.0), Complex(3.0, 4.0)}, {2,1});
-    std::vector<unsigned int> indices = {1,0};
+    Tensor<Complex> tensor({Complex(1.0, 2.0), Complex(3.0, 4.0), Complex(5.0, 6.0), Complex(7.0, 8.0)}, {2,2});
+    std::cout << "Original Tensor:" << std::endl;
+    tensor.print_tensor();
 
-    Complex t = tensor.value_at(indices);
+    Tensor<Complex> dft_result = dft(tensor);
+    Tensor<Complex> fft_result = fft(tensor);
 
-    std::cout << "Real: " << t.real() <<std::endl;
-    std::cout << "Imaginary: " << t.imag() <<std::endl;
+    std::cout << "DFT result: " << std::endl;
+    dft_result.print_tensor();
+
+    std::cout << "FFT result: " << std::endl;
+    fft_result.print_tensor();
+
+    dft_result = dft(dft_result, true);
+    std::cout << "Inverse DFT back result: " << std::endl;
+    dft_result.print_tensor();
+
+    fft_result = ifft(fft_result);
+    std::cout << "Inverse FFT back result: " << std::endl;
+    fft_result.print_tensor();
 }

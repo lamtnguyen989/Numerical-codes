@@ -82,6 +82,47 @@ class Tensor
             return slice;
         }
 
+        /*** 
+            Prints
+        ***/
+        void print_tensor()
+        {
+            unsigned int order = _shape.size();
+
+            switch (order) {
+                case 1: // 1D tensor is a vector
+                    std::cout << "[";
+                        for (unsigned int k = 0; k < size(); k++) {
+                                std::cout << _data.at(k);
+                                if (k < _data.size() - 1) 
+                                    std::cout << ", ";
+                        }
+                    std::cout << "]" << std::endl;
+                    break;
+                
+                case 2: // Order 2 tensor (matrix)
+                    std::cout << "[" << std::endl;
+                    for (unsigned int i = 0; i < _shape[0]; i++) {
+                        std::cout << "  [";
+                        for (unsigned int j = 0; j < _shape[1]; j++) {
+                            unsigned int idx = i * _strides[0] + j * _strides[1];
+                            std::cout << _data.at(idx);
+                            if (j < _shape[1] - 1) 
+                                std::cout << ", ";
+                        }
+                        std::cout << "]";
+                        if (i < _shape[0] - 1) 
+                            std::cout << ",";
+                        std::cout << std::endl;
+                    }
+                    std::cout << "]" << std::endl;
+                    break;
+                
+                default:
+                    break;  // TODO
+            }
+        }
+
     private: 
 
         /***
