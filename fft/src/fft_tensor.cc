@@ -125,9 +125,10 @@ std::vector<Complex> ifft_1d(std::vector<Complex> X) { return fft_1d(X, true);}
     Arbitrary order DFT using Tensor
 ***/
 // Global indices grabbing
-std::vector<unsigned int> grab_tensor_index_of_slice(unsigned int dim, unsigned int slice, unsigned int order, std::vector<unsigned int>& shape)
+std::vector<unsigned int> grab_tensor_index_of_slice(unsigned int dim, unsigned int slice, std::vector<unsigned int>& shape)
 {
         // Indices container
+        unsigned int order = shape.size();
         std::vector<unsigned int> indx(order, 0);
         
         // Calculate indices for this specific slice
@@ -165,7 +166,7 @@ Tensor<Complex> dft(Tensor<Complex> X, bool inverse=false)
                 
                 // DFT through all of the slices
                 for (unsigned int slice = 0; slice < num_slices; slice++) {
-                    std::vector<unsigned int> indices = grab_tensor_index_of_slice(dim, slice, order, shape);
+                    std::vector<unsigned int> indices = grab_tensor_index_of_slice(dim, slice, shape);
                     std::vector<Complex> slice_data = X.extract_1d_slice(dim, indices);
                     std::vector<Complex> transformed = dft_1d(slice_data, inverse);
                     result.set_1d_slice(dim, indices, transformed);
@@ -203,7 +204,7 @@ Tensor<Complex> fft(Tensor<Complex> X, bool inverse=false)
                 
                 // DFT through all of the slices
                 for (unsigned int slice = 0; slice < num_slices; slice++) {
-                    std::vector<unsigned int> indices = grab_tensor_index_of_slice(dim, slice, order, shape);
+                    std::vector<unsigned int> indices = grab_tensor_index_of_slice(dim, slice, shape);
                     std::vector<Complex> slice_data = X.extract_1d_slice(dim, indices);
                     std::vector<Complex> transformed = fft_1d(slice_data, inverse);
                     result.set_1d_slice(dim, indices, transformed);
