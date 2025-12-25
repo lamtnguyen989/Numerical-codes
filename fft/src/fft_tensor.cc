@@ -138,8 +138,8 @@ std::vector<unsigned int> grab_tensor_index_of_slice(unsigned int dim, unsigned 
                     continue;
                 unsigned int stride_val = 1;
                 for (unsigned int k = n + 1; k < order; k++) {
-                        if (k != dim) 
-                            stride_val *= shape.at(k);
+                    if (k != dim) 
+                        stride_val *= shape.at(k);
                 }
                 indx.at(n) = (temp / stride_val) % shape.at(n);
         } 
