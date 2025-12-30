@@ -6,3 +6,6 @@ basic: $(SRC_DIR)/fft.cc
 
 tensor: $(SRC_DIR)/fft_tensor.cc
 	g++ $< -O3 -flto -march=native -o $(BIN_DIR)/tensor-fft
+
+cosine: $(SRC_DIR)/cosine.cc
+	g++ $< -O3 -flto -o $(BIN_DIR)/cosine

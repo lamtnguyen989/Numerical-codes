@@ -7,6 +7,18 @@
 
 using Complex = std::complex<float>;
 
+/***
+    Function declarations
+***/
+std::vector<Complex> dft_1d(std::vector<Complex> &X, bool inverse);
+std::vector<Complex> idft_1d(std::vector<Complex> X);
+std::vector<Complex> fft_1d_pow_of_2(std::vector<Complex> X, bool inverse);
+std::vector<Complex> fft_1d(std::vector<Complex> X, bool inverse);
+Tensor<Complex> dft(Tensor<Complex> X, bool inverse);
+Tensor<Complex> idft(Tensor<Complex> X);
+Tensor<Complex> fft(Tensor<Complex> X, bool inverse);
+Tensor<Complex> ifft(Tensor<Complex> X);
+
 /*** 
     1D DFT
 ***/
@@ -33,7 +45,10 @@ std::vector<Complex> dft_1d(std::vector<Complex> &X, bool inverse=false)
             sum += X.at(n) * root_of_unity;
         }
 
-        if (inverse) {sum /= N;}
+        // Inverse transform renormalization
+        if (inverse) 
+            sum /= N;
+
         result.at(k) = sum;
     }
 
